@@ -30,21 +30,30 @@ const formSchema = z.object({
 		*/
 })
 
-type formType = z.infer<typeof formSchema>
+export type formType = z.infer<typeof formSchema>
 
 type Props = {
-	setNavigation: Dispatch<SetStateAction<INavigationItem[]>>
 	onCancel: () => void
+	onSubmit: (values: formType) => void
+	onDelete?: () => void
+	nazwa?: string
+	link?: string
 }
 
-const NavigationItemForm = ({ setNavigation, onCancel }: Props) => {
-	const form = useForm<formType>({ resolver: zodResolver(formSchema) })
-	const onSubmit = (values: formType) => {
-		// to delete
-		console.log(values)
-		setNavigation(prev => [...prev, values])
-		onCancel()
-	}
+const NavigationItemForm: React.FC<Props> = ({
+	onCancel,
+	onSubmit,
+	onDelete,
+	nazwa = '',
+	link = ''
+}) => {
+	const form = useForm<formType>({
+		resolver: zodResolver(formSchema),
+		defaultValues: {
+			nazwa,
+			link
+		}
+	})
 	return (
 		<Card className='relative w-4/5 pr-8'>
 			<CardContent className='mt-6'>
@@ -69,21 +78,26 @@ const NavigationItemForm = ({ setNavigation, onCancel }: Props) => {
 							render={({ field }) => (
 								<FormItem>
 									<FormLabel>Link</FormLabel>
-									<FormControl>
-										<div className='relative'>
+									<div className='relative'>
+										<FormControl>
 											<Input
 												{...field}
 												className='pl-8'
 												placeholder='Wklej lub wyszukaj'
 											/>
-											<SearchIcon className='absolute left-2 top-1/2 -translate-y-1/2 opacity-50' />
-										</div>
-									</FormControl>
+										</FormControl>
+										<SearchIcon className='absolute left-2 top-1/2 -translate-y-1/2 opacity-50' />
+									</div>
 									<FormMessage />
 								</FormItem>
 							)}
 						/>
-						<Button className='mt-4 mr-2' variant='outline' type='reset'>
+						<Button
+							className='mt-4 mr-2'
+							variant='outline'
+							type='reset'
+							onClick={onCancel}
+						>
 							Anuluj
 						</Button>
 						<Button variant='outline' type='submit'>
@@ -92,9 +106,14 @@ const NavigationItemForm = ({ setNavigation, onCancel }: Props) => {
 					</form>
 				</Form>
 			</CardContent>
-			<button className='absolute top-10 right-5 opacity-50' onClick={onCancel}>
-				<Trash2 />
-			</button>
+			{onDelete && (
+				<button
+					className='absolute top-10 right-5 opacity-50'
+					onClick={() => onDelete()}
+				>
+					<Trash2 />
+				</button>
+			)}
 		</Card>
 	)
 }
