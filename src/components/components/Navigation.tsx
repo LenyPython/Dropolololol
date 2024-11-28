@@ -24,14 +24,6 @@ const Navigation: React.FC<Props> = ({ onClose }) => {
 		setNavigation(prev => [...prev, values])
 		onCancel()
 	}
-	const onDelete = (toDelete: formType) => {
-		setNavigation(prev =>
-			prev.filter(
-				item => item.nazwa !== toDelete.nazwa && item.link !== toDelete.link
-			)
-		)
-		onCancel()
-	}
 	if (navigation.length === 0)
 		return <NavigationItemForm onCancel={onClose} onSubmit={onSubmit} />
 	return (
@@ -45,11 +37,7 @@ const Navigation: React.FC<Props> = ({ onClose }) => {
 			))}
 			<CardContent className='bg-zinc-50'>
 				{isAddNewItemOpen && (
-					<NavigationItemForm
-						onSubmit={onSubmit}
-						onDelete={onDelete}
-						onCancel={onCancel}
-					/>
+					<NavigationItemForm onSubmit={onSubmit} onCancel={onCancel} />
 				)}
 			</CardContent>
 			<CardContent className='bg-zinc-100'>
