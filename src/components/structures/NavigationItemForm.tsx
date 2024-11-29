@@ -1,12 +1,12 @@
 'use client'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { SearchIcon } from 'lucide-react'
+import { Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { SearchIcon } from 'lucide-react'
-import { Trash2 } from 'lucide-react'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
 import {
 	Form,
 	FormControl,
@@ -15,19 +15,16 @@ import {
 	FormLabel,
 	FormMessage
 } from '@/components/ui/form'
-import { Dispatch, SetStateAction } from 'react'
+import { INavigationItem } from '@/types'
 
 const formSchema = z.object({
 	nazwa: z
-		.string({ required_error: 'Nazwa jest wymagana' })
+		.string({ required_error: 'Nazwa jest wymagana i musi posiadać 3 znaki' })
 		.min(3, 'Nazwa musi posiadać przynajmniej 3 znaki'),
-	link: z.string({ required_error: 'Link nie może być pusty' })
-	/* to delete 
-		.regex(
-			/^https?:\/\/.+/,
-			'Link musi zaczynać się od podania protokołu http:// bądź https://'
-		)
-		*/
+	link: z
+		.string({ required_error: 'Link nie może być pusty' })
+		.url('Podaj poprawny link http(s)://domain.com')
+		.regex(/(.+\..+)$/, 'Podaj poprawny link http(s)://domain.com')
 })
 
 export type formType = z.infer<typeof formSchema>
@@ -55,7 +52,7 @@ const NavigationItemForm: React.FC<Props> = ({
 		}
 	})
 	return (
-		<Card className='relative w-4/5 pr-8'>
+		<Card className='relative w-full pr-6'>
 			<CardContent className='mt-6'>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)}>
@@ -100,7 +97,11 @@ const NavigationItemForm: React.FC<Props> = ({
 						>
 							Anuluj
 						</Button>
-						<Button variant='outline' type='submit'>
+						<Button
+							variant='outline'
+							className='text-violet-500 border-violet-500 hover:bg-violet-100 hover:text-violet-800'
+							type='submit'
+						>
 							Dodaj
 						</Button>
 					</form>

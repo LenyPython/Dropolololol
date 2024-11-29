@@ -1,5 +1,6 @@
 'use client'
 
+import { v4 as uuidv4 } from 'uuid'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useState } from 'react'
@@ -8,7 +9,6 @@ import NavigationItemForm, {
 } from '@/components/structures/NavigationItemForm'
 import Subnavigation from './Subnavigation'
 import { INavigationItem } from '@/types'
-import { createId } from '@/lib/utils'
 import Dndprovider from '@/providers/dndprovider'
 type Props = {
 	onCancel: () => void
@@ -20,10 +20,7 @@ const Navigation: React.FC<Props> = ({ onCancel }) => {
 	const closeAddNavigationItemForm = () => setIsAddNewItemOpen(false)
 	const openAddNavigationItemForm = () => setIsAddNewItemOpen(true)
 	const addNavigationItem = (values: formType) => {
-		setNavigation(prev => [
-			...prev,
-			{ ...values, id: createId(values, navigation.length, 0) }
-		])
+		setNavigation(prev => [...prev, { ...values, id: uuidv4() }])
 		closeAddNavigationItemForm()
 	}
 	if (navigation.length === 0)
@@ -41,14 +38,14 @@ const Navigation: React.FC<Props> = ({ onCancel }) => {
 					/>
 				))}
 			</Dndprovider>
-			<CardContent className='bg-zinc-50'>
-				{isAddNewItemOpen && (
+			{isAddNewItemOpen && (
+				<CardContent className='bg-zinc-50 py-6 px-16'>
 					<NavigationItemForm
 						onSubmit={addNavigationItem}
 						onCancel={closeAddNavigationItemForm}
 					/>
-				)}
-			</CardContent>
+				</CardContent>
+			)}
 			<CardContent className='bg-zinc-100'>
 				<Button
 					variant='outline'

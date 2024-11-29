@@ -35,11 +35,7 @@ const Dndprovider: React.FC<PropsWithChildren<Props>> = ({
 		}
 	}
 	return (
-		<DndContext
-			sensors={sensors}
-			collisionDetection={closestCenter}
-			onDragEnd={handleDragEnd}
-		>
+		<DndContext sensors={sensors} onDragEnd={handleDragEnd}>
 			<SortableContext items={items}>{children}</SortableContext>
 		</DndContext>
 	)

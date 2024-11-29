@@ -1,14 +1,14 @@
-import { Card, CardContent } from '@/components/ui/card'
+import { v4 as uuidv4 } from 'uuid'
 import { Dispatch, SetStateAction, useState } from 'react'
+import { Card, CardContent } from '@/components/ui/card'
 import NavigationItemForm, {
 	formType
 } from '@/components/structures/NavigationItemForm'
-import { INavigationItem } from '@/types'
-import NavigationItem from '../structures/NavigationItem'
-import { createId } from '@/lib/utils'
+import NavigationItem from '@/components/structures/NavigationItem'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import Dndprovider from '@/providers/dndprovider'
+import { INavigationItem } from '@/types'
 
 type Props = INavigationItem & {
 	setNavigation: Dispatch<SetStateAction<INavigationItem[]>>
@@ -30,48 +30,53 @@ const Subnavigation = ({
 	const openAddNewNavigationItem = () => setIsAddNewItemOpen(true)
 	const closeAddNewNavigationItem = () => setIsAddNewItemOpen(false)
 	const addNewNavigationItemToSubnavigation = (values: formType) => {
-		setSubnavigation(prev => [
-			...prev,
-			{ ...values, id: createId(values, subnavigation.length, depth) }
-		])
+		setSubnavigation(prev => [...prev, { ...values, id: uuidv4() }])
 		closeAddNewNavigationItem()
 	}
 
 	const deleteNavigationItem = () => {
-		setNavigation(prev =>
-			prev.filter(item => item.nazwa !== nazwa && item.link !== link)
-		)
+		setNavigation(prev => prev.filter(item => item.id !== id))
 		closeEditView()
 	}
 	const onSubmitEditForm = (values: formType) => {
-		console.log('TODO')
-		setNavigation(
-			prev => prev
-			/* 			prev.map(item =>
-				item.id === nazwa && item.link === link ?
-				 {...values,createId(values,)} : item
-			) */
+		setNavigation(prev =>
+			prev.map(item => (item.id === id ? { ...values, id: uuidv4() } : item))
 		)
+
 		closeEditView()
 	}
-	const { attributes, listeners, setNodeRef, transform, transition } =
-		useSortable({ id })
+	const {
+		attributes,
+		listeners,
+		setDraggableNodeRef,
+		setDroppableNodeRef,
+		transform,
+		transition
+	} = useSortable({ id })
 	const style = {
 		transform: CSS.Transform.toString(transform),
 		transition
 	}
 	return (
-		<CardContent ref={setNodeRef} style={style} className='p-0'>
-			<Card className='flex items-center justify-between w-full pr-6'>
-				{isEditView ? (
-					<NavigationItemForm
-						onCancel={closeEditView}
-						onSubmit={onSubmitEditForm}
-						onDelete={deleteNavigationItem}
-						nazwa={nazwa}
-						link={link}
-					/>
-				) : (
+		<CardContent
+			id={id}
+			ref={setDraggableNodeRef}
+			style={style}
+			className='p-0'
+		>
+			{isEditView ? (
+				<NavigationItemForm
+					onCancel={closeEditView}
+					onSubmit={onSubmitEditForm}
+					onDelete={deleteNavigationItem}
+					nazwa={nazwa}
+					link={link}
+				/>
+			) : (
+				<CardContent
+					ref={setDroppableNodeRef}
+					className='flex items-center justify-between bg-white border rounded-bl-xl w-full p-0 pr-6'
+				>
 					<NavigationItem
 						handlers={{ attributes, listeners }}
 						nazwa={nazwa}
@@ -80,9 +85,9 @@ const Subnavigation = ({
 						openEditForm={openEditForm}
 						openAddNewNavigationItem={openAddNewNavigationItem}
 					/>
-				)}
-			</Card>
-			<CardContent className='p-0 pl-16'>
+				</CardContent>
+			)}
+			<CardContent className='bg-zinc-50 p-0 pl-16'>
 				<Dndprovider setItems={setSubnavigation} items={subnavigation}>
 					{subnavigation.map(item => (
 						<Subnavigation
@@ -95,7 +100,7 @@ const Subnavigation = ({
 				</Dndprovider>
 			</CardContent>
 			{isAddNewItemOpen && (
-				<CardContent className='bg-zinc-50 pt-6 pl-16'>
+				<CardContent className='bg-zinc-50 py-6 pl-16'>
 					<NavigationItemForm
 						onSubmit={addNewNavigationItemToSubnavigation}
 						onCancel={closeAddNewNavigationItem}
