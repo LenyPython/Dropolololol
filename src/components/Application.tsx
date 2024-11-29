@@ -4,14 +4,15 @@ import { useState } from 'react'
 
 const Application = () => {
 	const [isAddNewItemOpen, setIsAddNewItemOpen] = useState(false)
-	const onClose = () => setIsAddNewItemOpen(false)
+	const closeAddNewNavigationItemForm = () => setIsAddNewItemOpen(false)
+	const openAddNewNavigationItemForm = () => setIsAddNewItemOpen(true)
 	return (
 		<div className='min-h-screen w-full bg-zinc-100 font-[family-name:var(--font-geist-sans)]'>
 			<main className='flex flex-col items-center gap-8 pt-10'>
 				{isAddNewItemOpen ? (
-					<Navigation onClose={onClose} />
+					<Navigation onCancel={closeAddNewNavigationItemForm} />
 				) : (
-					<DefaultView onClick={() => setIsAddNewItemOpen(true)} />
+					<DefaultView onClick={openAddNewNavigationItemForm} />
 				)}
 			</main>
 		</div>

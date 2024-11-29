@@ -1,6 +1,8 @@
 import { Menubar, MenubarMenu, MenubarTrigger } from '@/components/ui/menubar'
 import { Move } from 'lucide-react'
 import { CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { DraggableAttributes } from '@dnd-kit/core'
+import { SyntheticListenerMap } from '@dnd-kit/core/dist/hooks/utilities'
 
 type Props = {
 	nazwa: string
@@ -8,20 +10,30 @@ type Props = {
 	onDelete: () => void
 	openEditForm: () => void
 	openAddNewNavigationItem: () => void
+	handlers: {
+		attributes: DraggableAttributes
+		listeners?: SyntheticListenerMap
+	}
 }
 const NavigationItem: React.FC<Props> = ({
 	nazwa,
 	link,
 	onDelete,
 	openAddNewNavigationItem,
-	openEditForm
+	openEditForm,
+	handlers
 }) => {
+	const { attributes, listeners } = handlers
 	return (
 		<>
 			<CardHeader className='relative pl-16'>
 				<CardTitle>{nazwa}</CardTitle>
 				<CardDescription>{link}</CardDescription>
-				<Move className='absolute left-8 top-1/2 -translate-y-1/2' />
+				<Move
+					{...attributes}
+					{...listeners}
+					className='absolute left-8 top-1/2 -translate-y-1/2'
+				/>
 			</CardHeader>
 			<Menubar>
 				<MenubarMenu>
