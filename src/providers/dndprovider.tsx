@@ -1,3 +1,5 @@
+import NavigationItem from '@/components/structures/NavigationItem'
+import { CardContent } from '@/components/ui/card'
 import { INavigationItem } from '@/types'
 import {
 	DndContext,
@@ -5,10 +7,17 @@ import {
 	PointerSensor,
 	useSensor,
 	useSensors,
-	DragEndEvent
+	DragEndEvent,
+	DragOverlay,
+	DragStartEvent
 } from '@dnd-kit/core'
-import { arrayMove, SortableContext } from '@dnd-kit/sortable'
-import { Dispatch, PropsWithChildren, SetStateAction } from 'react'
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
+import {
+	arrayMove,
+	SortableContext,
+	verticalListSortingStrategy
+} from '@dnd-kit/sortable'
+import { Dispatch, PropsWithChildren, SetStateAction, useState } from 'react'
 
 type Props = {
 	setItems: Dispatch<SetStateAction<INavigationItem[]>>
@@ -20,6 +29,7 @@ const Dndprovider: React.FC<PropsWithChildren<Props>> = ({
 	setItems,
 	items
 }) => {
+	const [isDragging, setIsDragging] = useState<string | null>(null)
 	const sensors = useSensors(useSensor(PointerSensor))
 
 	const handleDragEnd = (event: DragEndEvent) => {
@@ -33,10 +43,34 @@ const Dndprovider: React.FC<PropsWithChildren<Props>> = ({
 				return arrayMove(items, oldIndex, newIndex)
 			})
 		}
+		setIsDragging(null)
+	}
+	const handleDragStart = (event: DragStartEvent) => {
+		setIsDragging(event.active.id as string)
 	}
 	return (
-		<DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-			<SortableContext items={items}>{children}</SortableContext>
+		<DndContext
+			sensors={sensors}
+			onDragStart={handleDragStart}
+			onDragEnd={handleDragEnd}
+			collisionDetection={closestCenter}
+			modifiers={[restrictToVerticalAxis]}
+		>
+			<SortableContext items={items} strategy={verticalListSortingStrategy}>
+				{children}
+			</SortableContext>
+			<DragOverlay className='z-50'>
+				{isDragging && (
+					<CardContent className='flex items-center justify-between bg-white border w-full p-0 pr-6'>
+						<NavigationItem
+							{...(items.find(
+								item => item.id === isDragging
+							) as INavigationItem)}
+							handlers={{}}
+						/>
+					</CardContent>
+				)}
+			</DragOverlay>
 		</DndContext>
 	)
 }

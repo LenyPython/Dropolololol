@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import { Dispatch, SetStateAction, useState } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
+import { CardContent } from '@/components/ui/card'
 import NavigationItemForm, {
 	formType
 } from '@/components/structures/NavigationItemForm'
@@ -12,6 +12,8 @@ import { INavigationItem } from '@/types'
 
 type Props = INavigationItem & {
 	setNavigation: Dispatch<SetStateAction<INavigationItem[]>>
+	isFirst?: boolean
+	isLast?: boolean
 	depth?: number
 }
 
@@ -20,6 +22,8 @@ const Subnavigation = ({
 	nazwa,
 	link,
 	setNavigation,
+	isFirst,
+	isLast,
 	depth = 0
 }: Props) => {
 	const [subnavigation, setSubnavigation] = useState<INavigationItem[]>([])
@@ -40,9 +44,8 @@ const Subnavigation = ({
 	}
 	const onSubmitEditForm = (values: formType) => {
 		setNavigation(prev =>
-			prev.map(item => (item.id === id ? { ...values, id: uuidv4() } : item))
+			prev.map(item => (item.id === id ? { ...values, id: item.id } : item))
 		)
-
 		closeEditView()
 	}
 	const {
@@ -51,7 +54,8 @@ const Subnavigation = ({
 		setDraggableNodeRef,
 		setDroppableNodeRef,
 		transform,
-		transition
+		transition,
+		isDragging
 	} = useSortable({ id })
 	const style = {
 		transform: CSS.Transform.toString(transform),
@@ -75,10 +79,15 @@ const Subnavigation = ({
 			) : (
 				<CardContent
 					ref={setDroppableNodeRef}
-					className='flex items-center justify-between bg-white border rounded-bl-xl w-full p-0 pr-6'
+					className={`flex items-center justify-between bg-white border ${
+						isFirst ? 'rounded-t-xl ' : isLast ? 'rounded-bl-xl ' : ' '
+					}w-full p-0 pr-6`}
 				>
 					<NavigationItem
-						handlers={{ attributes, listeners }}
+						handlers={{
+							attributes,
+							listeners
+						}}
 						nazwa={nazwa}
 						link={link}
 						onDelete={deleteNavigationItem}
@@ -87,7 +96,7 @@ const Subnavigation = ({
 					/>
 				</CardContent>
 			)}
-			<CardContent className='bg-zinc-50 p-0 pl-16'>
+			<CardContent className={`bg-zinc-50 p-0 pl-16 ${isDragging && 'hidden'}`}>
 				<Dndprovider setItems={setSubnavigation} items={subnavigation}>
 					{subnavigation.map(item => (
 						<Subnavigation
@@ -95,6 +104,7 @@ const Subnavigation = ({
 							{...item}
 							setNavigation={setSubnavigation}
 							depth={depth + 1}
+							isLast
 						/>
 					))}
 				</Dndprovider>

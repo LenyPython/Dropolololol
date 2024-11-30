@@ -30,11 +30,12 @@ const Navigation: React.FC<Props> = ({ onCancel }) => {
 	return (
 		<Card className='w-4/5'>
 			<Dndprovider setItems={setNavigation} items={navigation}>
-				{navigation.map(item => (
+				{navigation.map((item, idx) => (
 					<Subnavigation
 						key={item.id}
 						{...item}
 						setNavigation={setNavigation}
+						isFirst={idx === 0}
 					/>
 				))}
 			</Dndprovider>

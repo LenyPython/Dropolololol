@@ -7,11 +7,11 @@ import { SyntheticListenerMap } from '@dnd-kit/core/dist/hooks/utilities'
 type Props = {
 	nazwa: string
 	link: string
-	onDelete: () => void
-	openEditForm: () => void
-	openAddNewNavigationItem: () => void
+	onDelete?: () => void
+	openEditForm?: () => void
+	openAddNewNavigationItem?: () => void
 	handlers: {
-		attributes: DraggableAttributes
+		attributes?: DraggableAttributes
 		listeners?: SyntheticListenerMap
 	}
 }
@@ -37,15 +37,21 @@ const NavigationItem: React.FC<Props> = ({
 			</CardHeader>
 			<Menubar>
 				<MenubarMenu>
-					<MenubarTrigger className='border-r-2' onClick={onDelete}>
-						Usuń
-					</MenubarTrigger>
-					<MenubarTrigger className='border-r-2' onClick={openEditForm}>
-						Edytuj
-					</MenubarTrigger>
-					<MenubarTrigger onClick={openAddNewNavigationItem}>
-						Dodaj Pozycje Menu
-					</MenubarTrigger>
+					{onDelete && (
+						<MenubarTrigger className='border-r-2' onClick={onDelete}>
+							Usuń
+						</MenubarTrigger>
+					)}
+					{openEditForm && (
+						<MenubarTrigger className='border-r-2' onClick={openEditForm}>
+							Edytuj
+						</MenubarTrigger>
+					)}
+					{openAddNewNavigationItem && (
+						<MenubarTrigger onClick={openAddNewNavigationItem}>
+							Dodaj Pozycje Menu
+						</MenubarTrigger>
+					)}
 				</MenubarMenu>
 			</Menubar>
 		</>
