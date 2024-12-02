@@ -23,8 +23,7 @@ const formSchema = z.object({
 		.min(3, 'Nazwa musi posiadać przynajmniej 3 znaki'),
 	link: z
 		.string({ required_error: 'Link nie może być pusty' })
-		.url('Podaj poprawny link http(s)://domain.com')
-		.regex(/(.+\..+)$/, 'Podaj poprawny link http(s)://domain.com')
+		.regex(/^https?:\/\/(.+\..+)$/, 'Podaj poprawny link http(s)://domain.com')
 })
 
 export type formType = z.infer<typeof formSchema>

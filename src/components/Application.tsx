@@ -1,4 +1,4 @@
-import DefaultView from '@/components/structures/DefaultView'
+import DefaultView from '@/components/components/DefaultView'
 import Navigation from '@/components/components/Navigation'
 import { useState } from 'react'
 

@@ -14,7 +14,6 @@ type Props = INavigationItem & {
 	setNavigation: Dispatch<SetStateAction<INavigationItem[]>>
 	isFirst?: boolean
 	isLast?: boolean
-	depth?: number
 }
 
 const Subnavigation = ({
@@ -23,8 +22,7 @@ const Subnavigation = ({
 	link,
 	setNavigation,
 	isFirst,
-	isLast,
-	depth = 0
+	isLast
 }: Props) => {
 	const [subnavigation, setSubnavigation] = useState<INavigationItem[]>([])
 	const [isEditView, setIsEditView] = useState(false)
@@ -103,7 +101,6 @@ const Subnavigation = ({
 							key={item.id}
 							{...item}
 							setNavigation={setSubnavigation}
-							depth={depth + 1}
 							isLast
 						/>
 					))}
